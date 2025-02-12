@@ -11,7 +11,16 @@ const customJestConfig = {
     "^@/(.*)$": "<rootDir>/$1",
   },
   transform: {
-    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { presets: ["next/babel"] }],
+    "^.+\\.(js|jsx|ts|tsx)$": [
+      "babel-jest",
+      {
+        presets: [
+          ["@babel/preset-env", { targets: { node: "current" } }],
+          "@babel/preset-typescript",
+          ["@babel/preset-react", { runtime: "automatic" }],
+        ],
+      },
+    ],
   },
   moduleDirectories: ["node_modules", "<rootDir>/"],
   testMatch: ["**/__tests__/**/*.test.[jt]s?(x)"],
