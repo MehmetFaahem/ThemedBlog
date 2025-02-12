@@ -5,6 +5,7 @@ import { useBlogStore } from "@/lib/store";
 import { PostCard } from "@/components/post-card";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { NotFoundResults } from "@/components/not-found-results";
 
 interface PostListProps {
   initialPosts: any[];
@@ -25,6 +26,10 @@ export function PostList({ initialPosts }: PostListProps) {
   }
 
   const posts = filteredPosts();
+
+  if (posts.length === 0) {
+    return <NotFoundResults />;
+  }
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
