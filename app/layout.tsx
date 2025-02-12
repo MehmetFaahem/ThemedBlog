@@ -31,22 +31,25 @@ export default function RootLayout({
           storageKey="blog-theme"
         >
           <div className="min-h-screen container mx-auto">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <div className="container flex h-16 items-center justify-between">
-                <Link
-                  href="/"
-                  className="flex items-center space-x-3 transition-transform hover:scale-105"
-                >
-                  <BookOpen className="h-7 w-7" />
-                  <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-                    Modern Blog
-                  </span>
-                </Link>
-                <div className="flex items-center space-x-4">
-                  <div className="w-full max-w-md">
-                    <SearchBar />
+            <header className="max-md:px-2 sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <div className="container flex h-16 items-center">
+                <div className="flex flex-1 items-center justify-between gap-4">
+                  <Link
+                    href="/"
+                    className="flex items-center space-x-2 transition-transform hover:scale-105 md:space-x-3"
+                  >
+                    <BookOpen className="h-6 w-6 md:h-7 md:w-7" />
+                    <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60 max-md:hidden">
+                      Modern Blog
+                    </span>
+                  </Link>
+
+                  <div className="flex items-center gap-2 md:gap-4">
+                    <div className="w-full max-w-[200px] md:max-w-md">
+                      <SearchBar />
+                    </div>
+                    <ThemeToggle />
                   </div>
-                  <ThemeToggle />
                 </div>
               </div>
             </header>

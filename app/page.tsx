@@ -1,8 +1,6 @@
 import { Suspense } from "react";
 import { PostList } from "@/components/post-list";
-import { SearchBar } from "@/components/search-bar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { PostListSkeleton } from "@/components/post-list-skeleton";
 
 async function getPosts() {
   const res = await fetch("https://jsonplaceholder.typicode.com/posts", {
@@ -26,40 +24,9 @@ export default async function Home() {
           writers.
         </p>
       </div>
-      <PostList initialPosts={posts} />
-    </div>
-  );
-}
-
-function LoadingPosts() {
-  return (
-    <div className="transition-all duration-300 ease-in-out">
-      <PostListSkeleton />
-    </div>
-  );
-}
-
-function PostListSkeleton() {
-  return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <Card key={i} className="overflow-hidden">
-          <CardHeader className="space-y-3 pb-4">
-            <Skeleton className="h-4 w-1/2 animate-pulse" />
-            <Skeleton className="h-4 w-3/4 animate-pulse" />
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Skeleton className="h-20 w-full animate-pulse" />
-            <div className="flex items-center space-x-4">
-              <Skeleton className="h-10 w-10 rounded-full animate-pulse" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[120px] animate-pulse" />
-                <Skeleton className="h-4 w-[80px] animate-pulse" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+      <Suspense fallback={<PostListSkeleton />}>
+        <PostList initialPosts={posts} />
+      </Suspense>
     </div>
   );
 }

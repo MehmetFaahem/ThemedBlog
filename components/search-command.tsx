@@ -7,6 +7,14 @@ import { Command as CommandPrimitive } from "cmdk";
 import { Search, Loader2 } from "lucide-react";
 import { useBlogStore } from "@/lib/store";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export function SearchCommand({ ...props }: DialogProps) {
   const router = useRouter();
@@ -15,6 +23,8 @@ export function SearchCommand({ ...props }: DialogProps) {
   const posts = useBlogStore((state) => state.posts);
   const [isLoading, setIsLoading] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const [page, setPage] = React.useState(1);
+  const itemsPerPage = 9;
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -37,6 +47,14 @@ export function SearchCommand({ ...props }: DialogProps) {
     );
   }, [query, posts]);
 
+  const paginatedResults = React.useMemo(() => {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredPosts.slice(start, end);
+  }, [filteredPosts, page]);
+
+  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
+
   const handleSelect = React.useCallback(
     async (postId: string) => {
       setIsLoading(true);
@@ -54,6 +72,39 @@ export function SearchCommand({ ...props }: DialogProps) {
       setQuery("");
     }
   }, []);
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      pageNumbers.push(1);
+
+      let start = Math.max(2, page - 1);
+      let end = Math.min(totalPages - 1, page + 1);
+
+      if (start > 2) {
+        pageNumbers.push("...");
+      }
+
+      for (let i = start; i <= end; i++) {
+        pageNumbers.push(i);
+      }
+
+      if (end < totalPages - 1) {
+        pageNumbers.push("...");
+      }
+
+      pageNumbers.push(totalPages);
+    }
+
+    return pageNumbers;
+  };
 
   return (
     <>
@@ -100,7 +151,7 @@ export function SearchCommand({ ...props }: DialogProps) {
               <CommandPrimitive.Empty className="py-6 text-center text-sm">
                 No posts found.
               </CommandPrimitive.Empty>
-              {filteredPosts.map((post) => (
+              {paginatedResults.map((post) => (
                 <CommandPrimitive.Item
                   key={post.id}
                   value={post.title}
@@ -115,6 +166,61 @@ export function SearchCommand({ ...props }: DialogProps) {
                   </div>
                 </CommandPrimitive.Item>
               ))}
+
+              {filteredPosts.length > 0 && (
+                <div className="flex items-center justify-center p-4 border-t">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (page > 1) setPage(page - 1);
+                          }}
+                          className={
+                            page === 1 ? "pointer-events-none opacity-50" : ""
+                          }
+                        />
+                      </PaginationItem>
+
+                      {getPageNumbers().map((pageNumber, i) => (
+                        <PaginationItem key={i}>
+                          {pageNumber === "..." ? (
+                            <span className="px-4 py-2">...</span>
+                          ) : (
+                            <PaginationLink
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setPage(pageNumber as number);
+                              }}
+                              isActive={page === pageNumber}
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          )}
+                        </PaginationItem>
+                      ))}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (page < totalPages) setPage(page + 1);
+                          }}
+                          className={
+                            page === totalPages
+                              ? "pointer-events-none opacity-50"
+                              : ""
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </CommandPrimitive.List>
           </CommandPrimitive>
         </DialogContent>

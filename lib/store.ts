@@ -11,10 +11,15 @@ interface Post {
 interface BlogStore {
   posts: Post[];
   searchQuery: string;
+  currentPage: number;
+  itemsPerPage: number;
   setPosts: (posts: Post[]) => void;
   setSearchQuery: (query: string) => void;
   filteredPosts: () => Post[];
   clearSearch: () => void;
+  setCurrentPage: (page: number) => void;
+  paginatedPosts: () => Post[];
+  totalPages: () => number;
 }
 
 export const useBlogStore = create<BlogStore>()(
@@ -22,6 +27,8 @@ export const useBlogStore = create<BlogStore>()(
     (set, get) => ({
       posts: [],
       searchQuery: "",
+      currentPage: 1,
+      itemsPerPage: 9,
       setPosts: (posts) => set({ posts }),
       setSearchQuery: (query) => set({ searchQuery: query }),
       clearSearch: () => set({ searchQuery: "" }),
@@ -36,6 +43,18 @@ export const useBlogStore = create<BlogStore>()(
         );
 
         return filtered;
+      },
+      setCurrentPage: (page) => set({ currentPage: page }),
+      paginatedPosts: () => {
+        const { filteredPosts, currentPage, itemsPerPage } = get();
+        const posts = filteredPosts();
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        return posts.slice(start, end);
+      },
+      totalPages: () => {
+        const { filteredPosts, itemsPerPage } = get();
+        return Math.ceil(filteredPosts().length / itemsPerPage);
       },
     }),
     {

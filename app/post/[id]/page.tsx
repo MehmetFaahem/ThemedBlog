@@ -1,55 +1,53 @@
-import { Suspense } from "react"
-import { notFound } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Post {
-  id: number
-  title: string
-  body: string
-  userId: number
+  id: number;
+  title: string;
+  body: string;
+  userId: number;
 }
 
 interface User {
-  id: number
-  name: string
-  email: string
+  id: number;
+  name: string;
+  email: string;
 }
 
 async function getPost(id: string) {
   const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-    next: { revalidate: 3600 }
-  })
-  if (!res.ok) return null
-  return res.json()
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) return null;
+  return res.json();
 }
 
 async function getUser(id: string) {
   const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
-    next: { revalidate: 3600 }
-  })
-  if (!res.ok) return null
-  return res.json()
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) return null;
+  return res.json();
 }
 
 export async function generateStaticParams() {
-  const posts = await fetch('https://jsonplaceholder.typicode.com/posts').then(res => res.json())
+  const posts = await fetch("https://jsonplaceholder.typicode.com/posts").then(
+    (res) => res.json()
+  );
   return posts.map((post: Post) => ({
-    id: post.id.toString()
-  }))
+    id: post.id.toString(),
+  }));
 }
 
 export default async function PostPage({ params }: { params: { id: string } }) {
   const [post, author] = await Promise.all([
     getPost(params.id),
-    getUser(params.id)
-  ])
-
-  if (!post || !author) {
-    notFound()
-  }
+    getUser(params.id),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -65,7 +63,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
           <CardHeader>
             <CardTitle className="text-2xl">{post.title}</CardTitle>
             <div className="text-sm text-muted-foreground">
-              By {author.name} ({author.email})
+              By {author?.name} ({author?.email})
             </div>
           </CardHeader>
           <CardContent>
@@ -74,7 +72,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
         </Card>
       </Suspense>
     </div>
-  )
+  );
 }
 
 function PostSkeleton() {
@@ -88,5 +86,5 @@ function PostSkeleton() {
         <Skeleton className="h-[200px] w-full" />
       </CardContent>
     </Card>
-  )
+  );
 }
