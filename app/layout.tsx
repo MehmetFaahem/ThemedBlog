@@ -40,7 +40,7 @@ export default function RootLayout({
                   >
                     <BookOpen className="h-6 w-6 md:h-7 md:w-7" />
                     <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60 max-md:hidden">
-                      Modern Blog
+                      Themed Blog
                     </span>
                   </Link>
 
